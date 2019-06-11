@@ -43,7 +43,8 @@ jobs:
             coverage run flask run &> /tmp/flask.log &
 
             # Run a blackbox test -- for simplicity just curl an endpoint
-            curl http://127.0.0.1:5000/
+            curl http://127.0.0.1:5000/ || \
+              (cat /tmp/flask.log && exit 1)
 
             # Stop the background jump: coverage.py running flask
             jobs -p | xargs kill
