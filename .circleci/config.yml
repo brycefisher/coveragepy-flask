@@ -40,21 +40,28 @@ jobs:
             . venv/bin/activate
 
             # Background flask app
-            coverage run flask run &> /tmp/flask.log &
+            coverage run \
+              --parallel-mode \
+              -m flask run &> /tmp/flask.log &
+            sleep 1
+            set -x
+            jobs
+            cat /tmp/flask.log
 
             # Run a blackbox test -- for simplicity just curl an endpoint
-            curl http://127.0.0.1:5000/ || \
-              (cat /tmp/flask.log && exit 1)
+            curl http://127.0.0.1:5000/
 
             # Stop the background jump: coverage.py running flask
             jobs -p | xargs kill
+            sleep 1
+            ls -lah
+            set +x
 
             # Covert coverage.py into Cobertura.xml report
             coverage xml
 
             # Upload to codecov
             codecov
-
 
       - store_artifacts:
           path: test-reports
