@@ -52,7 +52,7 @@ jobs:
             curl http://127.0.0.1:5000/
 
             # Stop the background jump: coverage.py running flask
-            jobs -p | xargs kill
+            jobs -p | xargs kill -INT
             sleep 1
             ls -lah
             set +x
