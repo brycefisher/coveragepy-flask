@@ -45,20 +45,21 @@ jobs:
               -m flask run &> /tmp/flask.log &
             sleep 1
             set -x
-            jobs
             cat /tmp/flask.log
 
             # Run a blackbox test -- for simplicity just curl an endpoint
-            curl http://127.0.0.1:5000/
+            curl http://127.0.0.1:5000/ || true
 
             # Stop the background jump: coverage.py running flask
-            jobs -p | xargs kill -INT
+            kill  "$(ps -ef | grep flask | grep -v grep | awk '{ print $2 }')"
             sleep 1
             ls -lah
             set +x
 
             # Covert coverage.py into Cobertura.xml report
+            coverage combine
             coverage xml
+            coverage report
 
             # Upload to codecov
             codecov
